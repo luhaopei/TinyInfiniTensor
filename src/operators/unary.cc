@@ -67,7 +67,12 @@ namespace infini
         // REF_FILE: src/core/operator.cc
         // REF: https://onnx.ai/onnx/operators/onnx__Cast.html#cast-21
         // =================================== 作业 ===================================
-        return {};
+        auto input_dataType = inputs[0]->getDType();
+        auto output_dataType = getOutputDataType();
+        for(const auto&tensor : inputs){
+            IT_ASSERT(input_dataType == tensor->getDType());
+        }
+        return vector(numOutputs(), output_dataType);
     }
 
     optional<vector<Shape>> CastObj::inferShape(const TensorVec &inputs)
