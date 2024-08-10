@@ -18,12 +18,12 @@ Shape infer_broadcast(const Shape &A, const Shape &B) {
     auto rankB = B.size();
     auto rank = std::max(rankA, rankB);
     if(rankA < rank){
-        for(int i = 0; i < rank - rankA; ++i){
+        for(unsigned int i = 0; i < rank - rankA; ++i){
             A_.insert(A_.begin(), 1);
         }
     }
     if(rankB < rank){
-        for(int i = 0; i < rank - rankB; ++i){
+        for(unsigned int i = 0; i < rank - rankB; ++i){
             B_.insert(A_.begin(), 1);
         }
     }
