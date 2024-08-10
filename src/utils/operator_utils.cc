@@ -28,7 +28,7 @@ Shape infer_broadcast(const Shape &A, const Shape &B) {
         }
     }
     Shape ret; 
-    for (int i = 0; i < rank; ++i) {
+    for (unsigned int i = 0; i < rank; ++i) {
         IT_ASSERT(A_[i] == B_[i] || A_[i] == 1 || B_[i] == 1);
         auto shapeEle = std::max(A_[i], B_[i]);
         ret.emplace_back(shapeEle);
