@@ -16,7 +16,7 @@ namespace infini
         bool transA, transB;
 
         // Auxiliary attributes which are not a part of operator attributes.
-        int m, n, k;
+        int b, m, n, k;
 
     public:
         /**
