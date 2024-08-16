@@ -5,35 +5,31 @@ namespace infini {
 
 Shape infer_broadcast(const Shape &A, const Shape &B) {
 
-    // =================================== 作业 ===================================
+      // =================================== 作业 ===================================
     // TODO：对 A 和 B 进行双向广播，返回广播后的形状。
     // REF: https://github.com/onnx/onnx/blob/main/docs/Broadcasting.md
     // =================================== 作业 ===================================
-    if(A.empty() && B.empty()){
-        return {};
-    }
-    auto A_ = A;
-    auto B_ = B;
-    auto rankA = A.size();
-    auto rankB = B.size();
-    auto rank = std::max(rankA, rankB);
-    if(rankA < rank){
-        for(unsigned int i = 0; i < rank - rankA; ++i){
-            A_.insert(A_.begin(), 1);
+    Shape output = Shape(std::max(A.size(), B.size()));
+    if (A.size() > B.size()) {
+        for (int i = A.size() - 1, j = B.size() - 1; i >= 0; i--, j--) {
+            if (j < 0) {
+                output[i] = A[i];
+            } else {
+                A[i] == 1? output[i] = B[j] :
+                           output[i] = A[i];
+            }
+        }
+    } else {
+        for (int i = B.size() - 1, j = A.size() - 1; i >= 0; i--, j--) {
+            if (j < 0) {
+                output[i] = B[i];
+            } else {
+                B[i] == 1? output[i] = A[j] :
+                           output[i] = B[i];
+            }
         }
     }
-    if(rankB < rank){
-        for(unsigned int i = 0; i < rank - rankB; ++i){
-            B_.insert(A_.begin(), 1);
-        }
-    }
-    Shape ret; 
-    for (unsigned int i = 0; i < rank; ++i) {
-        IT_ASSERT(A_[i] == B_[i] || A_[i] == 1 || B_[i] == 1);
-        auto shapeEle = std::max(A_[i], B_[i]);
-        ret.emplace_back(shapeEle);
-    }
-    return ret;
+    return output;
 }
 
 int get_real_axis(const int &axis, const int &rank) {

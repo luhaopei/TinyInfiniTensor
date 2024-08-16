@@ -28,20 +28,29 @@ namespace infini
         IT_ASSERT(this->ptr == nullptr);
         // pad the size to the multiple of alignment
         size = this->getAlignedSize(size);
-        
 
         // =================================== 作业 ===================================
         // TODO: 设计一个算法来分配内存，返回起始地址偏移量
         // =================================== 作业 ===================================
+        if (mapFreeBlock.empty()) {
+            mapFreeBlock.insert({0, size});
+            this->peak = getAlignedSize(std::max(this->peak, size));
+            this->used += size;
+            return 0;
+        }
 
-        for(auto iter: mapFreeBlock){
-            if(size > 0){
-                size -= iter.second;
+        size_t allocated_addr = 0;
+        for (auto iter = mapFreeBlock.begin(); iter != mapFreeBlock.end(); iter++) {
+            auto [start_addr, size_cur] = *iter;
+            if (std::next(iter) == mapFreeBlock.end() || start_addr + size_cur + size <= std::next(iter)->first) {
+                allocated_addr = start_addr + size_cur;
+                mapFreeBlock.insert({allocated_addr, size});
+                this->peak = getAlignedSize(std::max(this->peak, allocated_addr + size - 1));
+                this->used += size;
+                break;
             }
         }
-        if(size > 0)
-            this->peak += size;
-        return this->peak;
+        return allocated_addr;
     }
 
     void Allocator::free(size_t addr, size_t size)
@@ -52,8 +61,8 @@ namespace infini
         // =================================== 作业 ===================================
         // TODO: 设计一个算法来回收内存
         // =================================== 作业 ===================================
-        mapFreeBlock[addr] = size;
-        this->peak -= size;
+        mapFreeBlock.erase(addr);
+        this->used -= size;
     }
 
     void *Allocator::getPtr()
